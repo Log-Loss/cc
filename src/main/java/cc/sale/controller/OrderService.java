@@ -40,9 +40,8 @@ public class OrderService {
     public Object get(Boolean useCache) {
         if (!useCache) {
             resultCache = jdbcTemplate.queryForList("SELECT * FROM orders LIMIT 200");
-            sizeCache = jdbcTemplate.queryForObject("SELECT count(*) FROM orders", Integer.class);
         }
-        return new Response(resultCache, sizeCache);
+        return new Response(resultCache);
     }
 
     @RequestMapping(value = "/order", method = RequestMethod.POST)

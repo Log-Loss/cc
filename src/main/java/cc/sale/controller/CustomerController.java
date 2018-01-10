@@ -28,9 +28,8 @@ public class CustomerController {
     public Object getList(Boolean useCache) {
         if (!useCache) {
             resultCache = jdbcTemplate.queryForList("SELECT * FROM customers LIMIT 200");
-            sizeCache = jdbcTemplate.queryForObject("SELECT count(*) FROM customers", Integer.class);
         }
-        return new Response(resultCache, sizeCache);
+        return new Response(resultCache);
     }
 
     @RequestMapping(value = "/customer", method = RequestMethod.DELETE)

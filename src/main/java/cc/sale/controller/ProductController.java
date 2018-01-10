@@ -42,9 +42,8 @@ public class ProductController {
     public Object get(Boolean useCache) {
         if (!useCache) {
             resultCache = jdbcTemplate.queryForList("SELECT * FROM products LIMIT 200");
-            sizeCache = jdbcTemplate.queryForObject("SELECT count(*) FROM products", Integer.class);
         }
-        return new Response(resultCache, sizeCache);
+        return new Response(resultCache);
     }
 
     @RequestMapping(value = "/product", method = RequestMethod.POST)
