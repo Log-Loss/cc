@@ -17,6 +17,9 @@ public class OrderService {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    private Object resultCache;
+    private Integer sizeCache;
+
     @RequestMapping(value = "/order", method = RequestMethod.GET)
     public Object get(String productId, String customerId) {
         if (productId == null && customerId == null) {
@@ -34,10 +37,12 @@ public class OrderService {
     }
 
     @RequestMapping(value = "/order/list", method = RequestMethod.GET)
-    public Object get() {
-        Object result = jdbcTemplate.queryForList("SELECT * FROM orders LIMIT 20");
-        Integer size = jdbcTemplate.queryForObject("SELECT count(*) FROM orders", Integer.class);
-        return new Response(result, size);
+    public Object get(Boolean useCache) {
+        if (!useCache) {
+            resultCache = jdbcTemplate.queryForList("SELECT * FROM orders LIMIT 200");
+            sizeCache = jdbcTemplate.queryForObject("SELECT count(*) FROM orders", Integer.class);
+        }
+        return new Response(resultCache, sizeCache);
     }
 
     @RequestMapping(value = "/order", method = RequestMethod.POST)

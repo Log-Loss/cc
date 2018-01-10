@@ -15,6 +15,9 @@ public class CustomerController {
     @Autowired
     JdbcTemplate jdbcTemplate;
 
+    private Object resultCache;
+    private Integer sizeCache;
+
     @RequestMapping(value = "/customer", method = RequestMethod.GET)
     public Object get(String customerId) {
         Object result = jdbcTemplate.queryForMap("SELECT * FROM customers WHERE customer_id='" + customerId + "'");
@@ -22,10 +25,12 @@ public class CustomerController {
     }
 
     @RequestMapping(value = "/customer/list", method = RequestMethod.GET)
-    public Object getList() {
-        Object result = jdbcTemplate.queryForList("SELECT * FROM customers LIMIT 20");
-        Integer size = jdbcTemplate.queryForObject("SELECT count(*) FROM customers", Integer.class);
-        return new Response(result, size);
+    public Object getList(Boolean useCache) {
+        if (!useCache) {
+            resultCache = jdbcTemplate.queryForList("SELECT * FROM customers LIMIT 200");
+            sizeCache = jdbcTemplate.queryForObject("SELECT count(*) FROM customers", Integer.class);
+        }
+        return new Response(resultCache, sizeCache);
     }
 
     @RequestMapping(value = "/customer", method = RequestMethod.DELETE)

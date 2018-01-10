@@ -17,6 +17,8 @@ import java.util.Timer;
 public class ProductController {
     @Autowired
     JdbcTemplate jdbcTemplate;
+    private Object resultCache;
+    private Integer sizeCache;
 
     public static String getRandomString(int length) { //length表示生成字符串的长度
         String base = "QWERTYUIOPASDFGHJKLZXCVBNM0123456789";
@@ -37,10 +39,12 @@ public class ProductController {
 
 
     @RequestMapping(value = "/product/list", method = RequestMethod.GET)
-    public Object get() {
-        Object result = jdbcTemplate.queryForList("SELECT * FROM products LIMIT 20");
-        Integer size = jdbcTemplate.queryForObject("SELECT count(*) FROM products", Integer.class);
-        return new Response(result, size);
+    public Object get(Boolean useCache) {
+        if (!useCache) {
+            resultCache = jdbcTemplate.queryForList("SELECT * FROM products LIMIT 200");
+            sizeCache = jdbcTemplate.queryForObject("SELECT count(*) FROM products", Integer.class);
+        }
+        return new Response(resultCache, sizeCache);
     }
 
     @RequestMapping(value = "/product", method = RequestMethod.POST)
